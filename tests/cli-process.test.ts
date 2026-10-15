@@ -43,7 +43,11 @@ async function runCli(
 ): Promise<{ stdout: string; stderr: string; code: number }> {
   try {
     const { stdout, stderr } = await execFileAsync(process.execPath, [CLI, ...args], {
-      env: { ...process.env, BREWHY_BREW_PATH: brewPath },
+      env: {
+        ...process.env,
+        BREWHY_BREW_PATH: brewPath,
+        XDG_CONFIG_HOME: join(dirname(brewPath), "config"),
+      },
     });
     return { stdout, stderr, code: 0 };
   } catch (error) {
@@ -53,6 +57,50 @@ async function runCli(
 }
 
 describe("cli entry point", () => {
+  it("saves and clears the cask default across separate processes", async (context) => {
+    const brew = stubBrew(context, "installed-cask-context");
+    const oneTime = await runCli(["--show-casks"], brew);
+    assert.equal(oneTime.code, 0);
+    assert.match(oneTime.stdout, /^Installed Casks:$/m);
+    assert.doesNotMatch((await runCli([], brew)).stdout, /^Installed Casks:$/m);
+
+    const saved = await runCli(["--show-casks", "--default"], brew);
+    assert.equal(saved.code, 0);
+    assert.equal(saved.stderr, "");
+    assert.equal(saved.stdout, "Preference saved: casks are shown by default.\n");
+    const next = await runCli([], brew);
+    assert.equal(next.code, 0);
+    assert.match(next.stdout, /^Installed Casks:$/m);
+
+    const cleared = await runCli(["--show-casks", "--no-default"], brew);
+    assert.equal(cleared.code, 0);
+    assert.equal(cleared.stderr, "");
+    assert.equal(cleared.stdout, "Preference saved: casks are hidden by default.\n");
+    const last = await runCli([], brew);
+    assert.equal(last.code, 0);
+    assert.match(last.stdout, /^4 Casks \(Hidden\)$/m);
+  });
+
+  it("does not save preferences for help, version or invalid arguments", async (context) => {
+    const brew = stubBrew(context, "installed-cask-context");
+    for (const flag of ["--help", "--version", "--unknown"]) {
+      const result = await runCli(["--show-casks", "--default", flag], brew);
+      assert.equal(result.code, flag === "--unknown" ? 2 : 0);
+      assert.doesNotMatch((await runCli([], brew)).stdout, /^Installed Casks:$/m);
+    }
+  });
+
+  it("saves preferences without querying Homebrew", async (context) => {
+    const brew = createExecutable(context, "echo 'Homebrew must not run' >&2\nexit 1").file;
+    for (const flag of ["--default", "--no-default"]) {
+      const result = await runCli(["--show-casks", flag], brew);
+      assert.equal(result.code, 0);
+      assert.equal(result.stderr, "");
+      assert.match(result.stdout, /^Preference saved:/);
+      assert.doesNotMatch(result.stdout, /Summary:|Installed Casks:/);
+    }
+  });
+
   it("writes parseable JSON through the real process", async (context) => {
     const brew = stubBrew(context, "installed-basic");
     const { stdout, stderr, code } = await runCli(["--json", "node"], brew);
