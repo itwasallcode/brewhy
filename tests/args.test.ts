@@ -21,6 +21,23 @@ describe("parseArgs", () => {
     assert.equal(parseArgs(["--show-casks"]).isCaskListHidden, false);
   });
 
+  it("accepts default modifiers in either order", () => {
+    assert.equal(parseArgs(["--show-casks", "--default"]).caskDefault, true);
+    assert.equal(parseArgs(["--no-default", "--show-casks"]).caskDefault, false);
+  });
+
+  it("rejects missing or conflicting default options", () => {
+    for (const flag of ["--default", "--no-default"]) {
+      assert.throws(() => parseArgs([flag]), /require --show-casks/);
+    }
+    for (const flags of [
+      ["--default", "--no-default"],
+      ["--no-default", "--default"],
+    ]) {
+      assert.throws(() => parseArgs(["--show-casks", ...flags]), /Cannot combine/);
+    }
+  });
+
   it("accepts a single package name", () => {
     const parsed = parseArgs(["openssl@3"]);
     assert.equal(parsed.name, "openssl@3");

@@ -6,6 +6,7 @@ export interface ParsedArgs {
   name: string | null;
   kind: PackageKind | null;
   isCaskListHidden: boolean;
+  caskDefault: boolean | null;
   help: boolean;
   version: boolean;
   json: boolean;
@@ -16,6 +17,7 @@ export function parseArgs(argv: string[]): ParsedArgs {
     name: null,
     kind: null,
     isCaskListHidden: true,
+    caskDefault: null,
     help: false,
     version: false,
     json: false,
@@ -45,6 +47,15 @@ export function parseArgs(argv: string[]): ParsedArgs {
       case "--show-casks":
         parsed.isCaskListHidden = false;
         break;
+      case "--default":
+      case "--no-default": {
+        const value = argument === "--default";
+        if (parsed.caskDefault !== null && parsed.caskDefault !== value) {
+          throw usageError("Cannot combine --default and --no-default.");
+        }
+        parsed.caskDefault = value;
+        break;
+      }
       case "--cask":
         setKind(parsed, "cask");
         break;
@@ -74,6 +85,12 @@ export function parseArgs(argv: string[]): ParsedArgs {
     throw usageError(
       `${flag} explains one installed ${parsed.kind}, so it needs a name.`,
       `Run \`brewhy ${flag} ${example}\`, or \`brewhy\` to list the inventory.`,
+    );
+  }
+  if (parsed.caskDefault !== null && parsed.isCaskListHidden) {
+    throw usageError(
+      "--default and --no-default require --show-casks.",
+      "Run `brewhy --show-casks --default` or `brewhy --show-casks --no-default`.",
     );
   }
   parsed.name = positionals[0] ?? null;

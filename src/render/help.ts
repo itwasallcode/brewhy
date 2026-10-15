@@ -13,5 +13,8 @@ Options:
   --show-casks             Include the cask list
   --help                   Show help
   --version                Show version
+
+To show casks by default, run brewhy --show-casks --default.
+To hide them on future runs, run brewhy --show-casks --no-default.
 `;
 }

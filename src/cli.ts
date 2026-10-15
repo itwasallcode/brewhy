@@ -7,6 +7,7 @@ import { stripVTControlCharacters } from "node:util";
 
 import { run } from "./app.js";
 import { SpawnBrewClient } from "./brew/client.js";
+import { FilePreferences } from "./preferences.js";
 
 function readVersion(): string {
   const require = createRequire(import.meta.url);
@@ -55,6 +56,7 @@ const result = await run(process.argv.slice(2), {
   isTTY: Boolean(process.stdout.isTTY),
   width: process.stdout.columns || DEFAULT_WIDTH,
   version,
+  preferences: new FilePreferences(),
 });
 
 if (result.stderr) write(process.stderr, result.stderr);
