@@ -6,25 +6,33 @@ A read-only CLI that explains why each formula is installed.
 
 <img src="docs/assets/Preview.png" alt="Brewhy" width="700" />
 
-## Why?
-
-To understand which Homebrew packages you installed yourself and which ones are there because other packages need them.
-
 ## Installation
 
-Run this command in your terminal and open a new terminal after installation.
+### Requirements
+
+- `macOS` with `Homebrew`.
+- `Node.js 22.14+ (22.x)` or `24.10+`, with `npm`.
+- `Git` for building from source.
+
+### Quick Start
+
+Run this command in your terminal to download and build the latest published release.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/itwasallcode/brewhy/master/scripts/install.sh | bash
 ```
 
-Requires `macOS with Homebrew` and `Node.js 22.14+ (22.x) or 24.10+` with `npm`.
+Open a new terminal and run `brewhy` for an overview; use `brewhy --help` or `brewhy --version` for details.
 
-### Update
+_If `brewhy` is not found, follow the installer's instructions to add `$HOME/.local/bin` to your shell's `PATH`._
+
+#### Update
 
 Run the installation command again to update to the latest release.
 
-### Uninstall
+#### Uninstall
+
+To uninstall the release installation, run:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/itwasallcode/brewhy/master/scripts/install.sh | bash -s -- --uninstall
@@ -32,11 +40,6 @@ curl -fsSL https://raw.githubusercontent.com/itwasallcode/brewhy/master/scripts/
 
 This removes Brewhy's installed files and command link; Homebrew packages and shell configuration are preserved.
 
-## Usage
+### Build From Source
 
-Run `brewhy` for an overview or `brewhy --help` for all available options.
-
-## Guides
-
-- [Development](docs/guides/Development.md)
-- [Troubleshooting](docs/guides/Troubleshooting.md)
+Follow the [Build From Source](docs/guides/Build-From-Source.md) guide to build, update or remove a source installation.
