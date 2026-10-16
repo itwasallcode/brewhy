@@ -14,7 +14,7 @@
   },
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.json",
-    "build:test": "rm -rf .test-build && tsc -p tsconfig.test.json",
+    "build:test": "rm -rf .test-build && tsc -p tests/tsconfig.json",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "lint": "eslint .",
@@ -22,7 +22,7 @@
     "release": "semantic-release",
     "test": "npm run build:test && node --test .test-build/tests/*.test.js",
     "test:update": "npm run build:test && UPDATE_SNAPSHOTS=1 node --test .test-build/tests/*.test.js",
-    "typecheck": "tsc -p tsconfig.test.json --noEmit"
+    "typecheck": "tsc -p tests/tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.3",
@@ -41,5 +41,87 @@
     "semantic-release": "^25.0.9",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.70.0"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ],
+    "rules": {
+      "header-max-length": [
+        2,
+        "always",
+        64
+      ],
+      "scope-empty": [
+        2,
+        "always"
+      ]
+    }
+  },
+  "lint-staged": {
+    "*.{js,mjs,ts}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": "prettier --write"
+  },
+  "prettier": {
+    "singleQuote": false,
+    "trailingComma": "all",
+    "arrowParens": "always",
+    "tabWidth": 2,
+    "useTabs": false,
+    "printWidth": 100,
+    "proseWrap": "never",
+    "bracketSpacing": true,
+    "semi": true,
+    "plugins": [
+      "@trivago/prettier-plugin-sort-imports"
+    ],
+    "importOrder": [
+      "^node:",
+      "<THIRD_PARTY_MODULES>",
+      "^[./]"
+    ],
+    "importOrderSeparation": true,
+    "importOrderSortSpecifiers": true,
+    "importOrderSideEffects": false
+  },
+  "release": {
+    "branches": [
+      "master"
+    ],
+    "tagFormat": "v${version}",
+    "plugins": [
+      [
+        "@semantic-release/commit-analyzer",
+        {
+          "preset": "conventionalcommits"
+        }
+      ],
+      [
+        "@semantic-release/release-notes-generator",
+        {
+          "preset": "conventionalcommits"
+        }
+      ],
+      [
+        "@semantic-release/npm",
+        {
+          "npmPublish": false
+        }
+      ],
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "package.json",
+            "package-lock.json"
+          ],
+          "message": "chore: release ${nextRelease.version}"
+        }
+      ],
+      "@semantic-release/github"
+    ]
   }
 }
