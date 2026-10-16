@@ -1,6 +1,6 @@
 {
   "name": "brewhy",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "private": true,
   "description": "A read-only CLI that explains why each formula is installed.",
   "license": "MIT",
