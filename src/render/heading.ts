@@ -1,8 +1,13 @@
 import type { ExplainedPackage } from "../graph/types.js";
+import { labelled } from "./labels.js";
 import { type TextOptions, budgetOf, clipTo } from "./layout.js";
 
-export function renderHeading(facts: ExplainedPackage, options: TextOptions): string[] {
-  const label = facts.label;
+export function renderHeading(
+  facts: ExplainedPackage,
+  options: TextOptions,
+  qualifyType = false,
+): string[] {
+  const label = qualifyType ? labelled(facts.label, facts.type) : facts.label;
   const version = headingVersion(facts);
   const body = headingBody(facts);
   if (!options.isTTY) {

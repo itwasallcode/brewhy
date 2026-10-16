@@ -1,9 +1,9 @@
 import { reconstructPath } from "../graph/paths.js";
 import type { Analysis, ExplainedPackage } from "../graph/types.js";
 
-export function renderJSON(analysis: Analysis, detail: ExplainedPackage | null): string {
+export function renderJSON(analysis: Analysis, details: ExplainedPackage[] | null): string {
   const data =
-    detail === null
+    details === null
       ? {
           schemaVersion: 1,
           summary: { ...analysis.summary, casks: analysis.casks.length },
@@ -12,7 +12,7 @@ export function renderJSON(analysis: Analysis, detail: ExplainedPackage | null):
           ),
           roots: analysis.roots,
         }
-      : { schemaVersion: 1, package: packageJSON(analysis, detail) };
+      : { schemaVersion: 2, packages: details.map((facts) => packageJSON(analysis, facts)) };
   return `${JSON.stringify(data, null, 2)}\n`;
 }
 

@@ -4,10 +4,10 @@ import { parseInventory } from "./brew/parser.js";
 import { BrewhyError, EXIT_OK, EXIT_OPERATIONAL, operationalError } from "./errors.js";
 import { analyze } from "./graph/classify.js";
 import { buildGraph } from "./graph/graph.js";
-import { resolvePackage } from "./lookup.js";
+import { resolvePackages } from "./lookup.js";
 import type { Preferences } from "./preferences.js";
 import { renderBanner } from "./render/banner.js";
-import { renderDetail } from "./render/detail.js";
+import { renderDetails } from "./render/detail.js";
 import { helpText } from "./render/help.js";
 import { renderJSON } from "./render/json.js";
 import { renderOverview } from "./render/overview.js";
@@ -80,10 +80,10 @@ async function execute(argv: string[], deps: RunDependencies): Promise<RunResult
   const graph = buildGraph(inventory);
   const analysis = analyze(inventory, graph);
 
-  const detail = parsed.name === null ? null : resolvePackage(analysis, parsed.name, parsed.kind);
+  const details = parsed.name === null ? null : resolvePackages(analysis, parsed.name);
   if (parsed.json) {
     return {
-      stdout: renderJSON(analysis, detail),
+      stdout: renderJSON(analysis, details),
       stderr: formatWarnings(analysis.warnings),
       exitCode: EXIT_OK,
     };
@@ -91,14 +91,14 @@ async function execute(argv: string[], deps: RunDependencies): Promise<RunResult
   const textOptions = { width: deps.width, isTTY: deps.isTTY };
 
   const lines =
-    detail !== null
-      ? renderDetail(analysis, detail, textOptions)
+    details !== null
+      ? renderDetails(analysis, details, textOptions)
       : renderOverview(analysis, {
           ...textOptions,
           isCaskListHidden: parsed.isCaskListHidden,
         });
 
-  const opening = deps.isTTY ? ["", ...(detail === null ? renderBanner(textOptions) : [])] : [];
+  const opening = deps.isTTY ? ["", ...(details === null ? renderBanner(textOptions) : [])] : [];
   const trailer = deps.isTTY ? [""] : [];
   return {
     stdout: `${[...opening, ...lines, ...trailer].join("\n")}\n`,

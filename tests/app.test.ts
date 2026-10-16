@@ -18,9 +18,9 @@ describe("run", () => {
       /^brewhy — A read-only CLI that explains why each formula is installed\./,
     );
     assert.match(result.stdout, /^  brewhy\s+List requested formulae$/m);
-    assert.match(result.stdout, /brewhy <name>/);
-    assert.match(result.stdout, /brewhy --cask <name>/);
-    assert.match(result.stdout, /brewhy --formula <name>/);
+    assert.match(result.stdout, /brewhy <name> \[--json\]\s+Explain a package/);
+    assert.doesNotMatch(result.stdout, /brewhy --cask <name>/);
+    assert.doesNotMatch(result.stdout, /brewhy --formula <name>/);
     assert.match(result.stdout, /--show-casks/);
     assert.doesNotMatch(result.stdout, /\x1b/);
     assert.doesNotMatch(result.stdout, /--tree/);
@@ -116,7 +116,7 @@ describe("run", () => {
   });
 
   it("preserves formula reasons and explicit cask details when hiding the cask list", async () => {
-    for (const argv of [["podman"], ["--cask", "podman-desktop"], ["child-app"]]) {
+    for (const argv of [["podman"], ["podman-desktop"], ["child-app"]]) {
       const visible = await runFixture("installed-cask-context", ["--show-casks", ...argv]);
       const hidden = await runFixture("installed-cask-context", argv);
       assert.equal(hidden.exitCode, 0);
