@@ -106,9 +106,9 @@ describe("cli entry point", () => {
     const { stdout, stderr, code } = await runCli(["--json", "node"], brew);
     assert.equal(code, 0);
     assert.equal(stderr, "");
-    const data = JSON.parse(stdout) as { schemaVersion: number; package: { ID: string } };
-    assert.equal(data.schemaVersion, 1);
-    assert.equal(data.package.ID, "formula:node");
+    const data = JSON.parse(stdout) as { schemaVersion: number; packages: { ID: string }[] };
+    assert.equal(data.schemaVersion, 2);
+    assert.equal(data.packages[0]?.ID, "formula:node");
     assert.doesNotMatch(stdout, /\x1b/);
   });
   it("reports the version from the package.json beside the built file", async () => {
@@ -162,7 +162,7 @@ describe("cli entry point", () => {
     formula.desc = `\x1b[31m${description}\x1b[0m`;
     formula.homepage = homepage;
     writeFileSync(join(dirname(brew), "info.json"), JSON.stringify(fixture.info));
-    const { stdout, stderr, code } = await runCli(["--formula", "node"], brew);
+    const { stdout, stderr, code } = await runCli(["node"], brew);
     assert.equal(code, 0);
     assert.equal(stderr, "");
     assert.match(stdout, /^node$/m);

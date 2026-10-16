@@ -1,10 +1,7 @@
 import { usageError } from "./errors.js";
 
-export type PackageKind = "formula" | "cask";
-
 export interface ParsedArgs {
   name: string | null;
-  kind: PackageKind | null;
   isCaskListHidden: boolean;
   caskDefault: boolean | null;
   help: boolean;
@@ -15,7 +12,6 @@ export interface ParsedArgs {
 export function parseArgs(argv: string[]): ParsedArgs {
   const parsed: ParsedArgs = {
     name: null,
-    kind: null,
     isCaskListHidden: true,
     caskDefault: null,
     help: false,
@@ -56,12 +52,6 @@ export function parseArgs(argv: string[]): ParsedArgs {
         parsed.caskDefault = value;
         break;
       }
-      case "--cask":
-        setKind(parsed, "cask");
-        break;
-      case "--formula":
-        setKind(parsed, "formula");
-        break;
       default:
         if (argument.startsWith("-") && argument !== "-") {
           throw usageError(
@@ -79,14 +69,6 @@ export function parseArgs(argv: string[]): ParsedArgs {
       "Explain one package at a time, for example `brewhy openssl@3`.",
     );
   }
-  if (parsed.kind !== null && positionals.length === 0) {
-    const flag = parsed.kind === "cask" ? "--cask" : "--formula";
-    const example = parsed.kind === "cask" ? "firefox" : "openssl@3";
-    throw usageError(
-      `${flag} explains one installed ${parsed.kind}, so it needs a name.`,
-      `Run \`brewhy ${flag} ${example}\`, or \`brewhy\` to list the inventory.`,
-    );
-  }
   if (parsed.caskDefault !== null && parsed.isCaskListHidden) {
     throw usageError(
       "--default and --no-default require --show-casks.",
@@ -96,14 +78,4 @@ export function parseArgs(argv: string[]): ParsedArgs {
   parsed.name = positionals[0] ?? null;
 
   return parsed;
-}
-
-function setKind(parsed: ParsedArgs, kind: PackageKind): void {
-  if (parsed.kind !== null && parsed.kind !== kind) {
-    throw usageError(
-      "Cannot combine --cask and --formula.",
-      "Use one lookup qualifier, for example `brewhy --cask firefox`.",
-    );
-  }
-  parsed.kind = kind;
 }

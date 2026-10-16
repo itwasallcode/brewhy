@@ -3,18 +3,15 @@ export function helpText(isTTY: boolean): string {
   return `${name} — A read-only CLI that explains why each formula is installed.
 
 Usage:
-  brewhy                   List requested formulae
-  brewhy <name>            Explain a package
-  brewhy --formula <name>  Explain a formula
-  brewhy --cask <name>     Explain a cask
+  brewhy                            List requested formulae
+  brewhy --show-casks               Include casks in the list
+  brewhy --json                     Output the full inventory as JSON
+  brewhy <name> [--json]            Explain a package
 
-Options:
-  --json                   Output JSON
-  --show-casks             Include the cask list
-  --help                   Show help
-  --version                Show version
+  brewhy --show-casks --default     Show casks on future runs
+  brewhy --show-casks --no-default  Hide casks on future runs
 
-To show casks by default, run brewhy --show-casks --default.
-To hide them on future runs, run brewhy --show-casks --no-default.
+  brewhy --help                     Show help
+  brewhy --version                  Show version
 `;
 }

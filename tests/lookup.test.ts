@@ -1,6 +1,6 @@
 /**
  * Verifies package lookup through the application using fixture inventories.
- * Checks aliases, formula and cask selection, and errors for missing or ambiguous names.
+ * Checks aliases, formula and cask selection, and the error for a missing name.
  */
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
@@ -47,34 +47,7 @@ describe("package lookup", () => {
     assert.match(result.stdout, /parent-app \(cask\)/);
   });
 
-  it("explains a cask when --cask disambiguates the lookup", async () => {
-    const result = await runFixture("installed-cask-context", ["--cask", "podman-desktop"]);
-    assert.equal(result.exitCode, 0);
-    assert.match(result.stdout, /as a cask/);
-  });
-
-  it("rejects --cask when the name is not an installed cask", async () => {
-    const result = await runFixture("installed-basic", ["--cask", "ghost"]);
-    assert.equal(result.exitCode, 2);
-    assert.match(result.stderr, /ghost is not an installed cask/);
-    assert.equal(result.stdout, "");
-  });
-
-  it("rejects --cask when the name is an installed formula", async () => {
-    const result = await runFixture("installed-basic", ["--cask", "wget"]);
-    assert.equal(result.exitCode, 2);
-    assert.match(result.stderr, /wget is an installed formula, not a cask/);
-    assert.equal(result.stdout, "");
-  });
-
-  it("rejects --formula when the name is an installed cask", async () => {
-    const result = await runFixture("installed-cask-context", ["--formula", "podman-desktop"]);
-    assert.equal(result.exitCode, 2);
-    assert.match(result.stderr, /is an installed cask, not a formula/);
-    assert.equal(result.stdout, "");
-  });
-
-  it("asks for --formula or --cask when a name is both", async () => {
+  it("explains both the formula and the cask when a name is both", async () => {
     const payload: RawBrewInfo = {
       formulae: [
         {
@@ -106,18 +79,12 @@ describe("package lookup", () => {
       width: 80,
       version: "0.1.0-test",
     };
-    const ambiguous = await run(["docker"], deps);
-    assert.equal(ambiguous.exitCode, 2);
-    assert.match(ambiguous.stderr, /both an installed formula and an installed cask/);
-    assert.equal(ambiguous.stdout, "");
-
-    const asFormula = await run(["--formula", "docker"], deps);
-    assert.equal(asFormula.exitCode, 0);
-    assert.match(asFormula.stdout, /on request/);
-
-    const asCask = await run(["--cask", "docker"], deps);
-    assert.equal(asCask.exitCode, 0);
-    assert.match(asCask.stdout, /as a cask/);
+    const result = await run(["docker"], deps);
+    assert.equal(result.exitCode, 0);
+    assert.match(result.stdout, /^docker$/m);
+    assert.match(result.stdout, /^docker \(cask\)$/m);
+    assert.match(result.stdout, /on request/);
+    assert.match(result.stdout, /as a cask/);
   });
 
   it("resolves a formula through its alias", async () => {

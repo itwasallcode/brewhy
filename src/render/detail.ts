@@ -10,14 +10,27 @@ export function renderDetail(
   analysis: Analysis,
   facts: ExplainedPackage,
   options: TextOptions,
+  qualifyType = false,
 ): string[] {
   const root = rootFor(analysis, facts);
-  const lines = renderHeading(facts, options);
+  const lines = renderHeading(facts, options, qualifyType);
   lines.push("", ...definitionList(detailRows(analysis, facts, root), options));
   if (facts.type === "formula" && facts.isUnexplained) {
     lines.push("", ...renderUnexplainedNote("one", options));
   }
   return lines;
+}
+
+export function renderDetails(
+  analysis: Analysis,
+  factsList: ExplainedPackage[],
+  options: TextOptions,
+): string[] {
+  const qualifyType = factsList.length > 1;
+  return factsList.flatMap((facts, index) => [
+    ...(index === 0 ? [] : [""]),
+    ...renderDetail(analysis, facts, options, qualifyType),
+  ]);
 }
 
 function detailRows(

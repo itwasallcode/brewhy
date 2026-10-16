@@ -25,8 +25,8 @@ describe("direct dependency explanations", () => {
     );
     const result = await runFixture(fixtureName, ["pcre2", "--json"]);
     const data = JSON.parse(result.stdout);
-    assert.deepEqual(data.package.immediateDependents, [formulaID("ripgrep")]);
-    assert.deepEqual(data.package.reasonPaths, [
+    assert.deepEqual(data.packages[0].immediateDependents, [formulaID("ripgrep")]);
+    assert.deepEqual(data.packages[0].reasonPaths, [
       {
         source: formulaID("opencode"),
         path: [formulaID("opencode"), formulaID("ripgrep"), formulaID("pcre2")],
@@ -78,7 +78,7 @@ describe("direct dependency explanations", () => {
         version: "test",
       });
       assert.equal(result.exitCode, 0);
-      assert.deepEqual(JSON.parse(result.stdout).package.reasonPaths, []);
+      assert.deepEqual(JSON.parse(result.stdout).packages[0].reasonPaths, []);
       assert.match(result.stderr, /dependency paths are unknown/);
     });
   }

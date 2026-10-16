@@ -81,11 +81,10 @@ describe("JSON output", () => {
     for (const entry of data.packages) {
       const detail = await runFixture("installed-cask-context", [
         "--json",
-        `--${entry.type}`,
         entry.ID.slice(entry.ID.indexOf(":") + 1),
       ]);
       assert.equal(detail.exitCode, 0);
-      assert.deepEqual(JSON.parse(detail.stdout), { schemaVersion: 1, package: entry });
+      assert.deepEqual(JSON.parse(detail.stdout), { schemaVersion: 2, packages: [entry] });
     }
   });
 
@@ -145,7 +144,7 @@ describe("JSON output", () => {
     };
     const help = await run(["--json", "--help"], deps);
     assert.equal(help.exitCode, 0);
-    assert.match(help.stdout, /--json\s+Output JSON/);
+    assert.match(help.stdout, /brewhy --json\s+Output the full inventory as JSON/);
     assert.equal((await run(["--json", "--version"], deps)).stdout, "test\n");
   });
 });
