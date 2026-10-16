@@ -15,7 +15,7 @@ describe("run", () => {
     assert.equal(result.exitCode, 0);
     assert.match(
       result.stdout,
-      /^brewhy — A read-only CLI that explains why each formula is installed\./,
+      /^\nbrewhy — A read-only CLI that explains why each formula is installed\./,
     );
     assert.match(result.stdout, /^  brewhy\s+List requested formulae$/m);
     assert.match(result.stdout, /brewhy <name> \[--json\]\s+Explain a package/);
@@ -32,7 +32,7 @@ describe("run", () => {
     const result = await runFixture("installed-basic", ["--help"], { isTTY: true });
     assert.match(
       result.stdout,
-      /^\x1b\[1mbrewhy\x1b\[0m — A read-only CLI that explains why each formula is installed\./,
+      /^\n\x1b\[1mbrewhy\x1b\[0m — A read-only CLI that explains why each formula is installed\./,
     );
     assert.equal(
       result.stdout.match(/\x1b\[1mbrewhy\x1b\[0m/g)?.length,
@@ -127,8 +127,8 @@ describe("run", () => {
 
   it("writes warnings to stderr so piped stdout stays clean", async () => {
     const result = await runFixture("installed-incomplete", []);
-    assert.match(result.stderr, /^warning: /m);
-    assert.ok(!result.stdout.includes("warning:"));
+    assert.match(result.stderr, /^Warning: /m);
+    assert.ok(!result.stdout.includes("Warning:"));
   });
 
   it("exits 1 when Homebrew cannot be executed", async () => {
@@ -175,7 +175,7 @@ describe("run", () => {
       version: "0.1.0-test",
     });
     assert.equal(result.exitCode, 1);
-    assert.match(result.stderr, /Unexpected failure: boom/);
+    assert.match(result.stderr, /An unexpected error occurred \(boom\)\./);
   });
 
   it("caps stderr warnings and reports how many were suppressed", async () => {
@@ -200,7 +200,7 @@ describe("run", () => {
       version: "0.1.0-test",
     });
     assert.equal(result.exitCode, 0);
-    const warningLines = result.stderr.split("\n").filter((line) => line.startsWith("warning: "));
+    const warningLines = result.stderr.split("\n").filter((line) => line.startsWith("Warning: "));
     assert.equal(warningLines.length, 21);
     assert.match(result.stderr, /5 more warnings not shown/);
     assert.match(result.stderr, /tool-0 depends on missing-dep/);

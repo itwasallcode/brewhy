@@ -52,6 +52,25 @@ export function packLines(words: string[], budget: number): string[] {
   return lines;
 }
 
+export function wrapText(text: string, options: TextOptions, indent = ""): string[] {
+  const budget = Math.max(1, budgetOf(options) - indent.length);
+  return wrapToWidth(text, budget).map((line) => indent + line);
+}
+
+export function wrapToWidth(text: string, width: number): string[] {
+  const budget = Math.max(1, width);
+  const words = text.split(/\s+/).filter(Boolean);
+  const chunks = words.flatMap((word) => {
+    const characters = [...word];
+    const parts: string[] = [];
+    for (let start = 0; start < characters.length; start += budget) {
+      parts.push(characters.slice(start, start + budget).join(""));
+    }
+    return parts;
+  });
+  return packLines(chunks, budget);
+}
+
 const LIST_INDENT = "  ";
 
 function commaWords(names: string[]): string[] {

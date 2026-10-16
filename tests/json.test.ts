@@ -93,7 +93,7 @@ describe("JSON output", () => {
     assert.equal(result.exitCode, 0);
     const data = JSON.parse(result.stdout) as OverviewJSON;
     assert.ok(data.packages.some((entry) => entry.intent === "unknown"));
-    assert.match(result.stderr, /^warning:/);
+    assert.match(result.stderr, /^Warning:/);
   });
 
   it("exports an empty inventory", async () => {
@@ -113,7 +113,7 @@ describe("JSON output", () => {
     const missing = await runFixture("installed-basic", ["--json", "missing-package"]);
     assert.equal(missing.exitCode, 2);
     assert.equal(missing.stdout, "");
-    assert.match(missing.stderr, /^error:/);
+    assert.match(missing.stderr, /^Error:/);
     const failed = await run(["--json"], {
       client: {
         info: async () => {
@@ -127,7 +127,7 @@ describe("JSON output", () => {
     });
     assert.equal(failed.exitCode, 1);
     assert.equal(failed.stdout, "");
-    assert.match(failed.stderr, /^error:/);
+    assert.match(failed.stderr, /^Error:/);
   });
 
   it("gives help and version precedence over JSON without querying Homebrew", async () => {

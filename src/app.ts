@@ -42,7 +42,7 @@ export async function run(argv: string[], deps: RunDependencies): Promise<RunRes
     const message = error instanceof Error ? error.message : String(error);
     return {
       stdout: "",
-      stderr: formatError(`Unexpected failure: ${message}`),
+      stderr: formatError(`An unexpected error occurred (${message}).`),
       exitCode: EXIT_OPERATIONAL,
     };
   }
@@ -61,8 +61,14 @@ async function execute(argv: string[], deps: RunDependencies): Promise<RunResult
   if (parsed.caskDefault !== null) {
     if (!deps.preferences) throw operationalError("Preference storage is unavailable.");
     await deps.preferences.setShowCasks(parsed.caskDefault);
+    const label = "Preference saved:";
+    const message = `casks are ${parsed.caskDefault ? "shown" : "hidden"} by default.`;
+    const confirmation = deps.isTTY
+      ? `\x1b[31m${label}\x1b[0m \x1b[90m${message}\x1b[0m`
+      : `${label} ${message}`;
+    const lines = [...(deps.isTTY ? [""] : []), confirmation, ...(deps.isTTY ? [""] : [])];
     return {
-      stdout: `Preference saved: casks are ${parsed.caskDefault ? "shown" : "hidden"} by default.\n`,
+      stdout: `${lines.join("\n")}\n`,
       stderr: "",
       exitCode: EXIT_OK,
     };
@@ -110,15 +116,15 @@ async function execute(argv: string[], deps: RunDependencies): Promise<RunResult
 function formatWarnings(warnings: string[]): string {
   if (warnings.length === 0) return "";
   const shown = warnings.slice(0, MAX_PRINTED_WARNINGS);
-  const lines = shown.map((warning) => `warning: ${warning}`);
+  const lines = shown.map((warning) => `Warning: ${warning}`);
   if (warnings.length > shown.length) {
-    lines.push(`warning: ${warnings.length - shown.length} more warnings not shown.`);
+    lines.push(`Warning: ${warnings.length - shown.length} more warnings not shown.`);
   }
   return `${lines.join("\n")}\n`;
 }
 
 function formatError(message: string, hint?: string): string {
-  const lines = [`error: ${message}`];
+  const lines = [`Error: ${message}`];
   if (hint) lines.push(hint);
   return `${lines.join("\n")}\n`;
 }

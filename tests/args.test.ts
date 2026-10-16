@@ -27,13 +27,13 @@ describe("parseArgs", () => {
 
   it("rejects missing or conflicting default options", () => {
     for (const flag of ["--default", "--no-default"]) {
-      assert.throws(() => parseArgs([flag]), /require --show-casks/);
+      assert.throws(() => parseArgs([flag]), /requires '--show-casks'/);
     }
     for (const flags of [
       ["--default", "--no-default"],
       ["--no-default", "--default"],
     ]) {
-      assert.throws(() => parseArgs(["--show-casks", ...flags]), /Cannot combine/);
+      assert.throws(() => parseArgs(["--show-casks", ...flags]), /cannot be combined/);
     }
   });
 
@@ -47,13 +47,20 @@ describe("parseArgs", () => {
   });
 
   it("rejects unknown options", () => {
-    assert.throws(() => parseArgs(["--hide-casks"]), /Unknown option: --hide-casks/);
-    assert.throws(() => parseArgs(["--nope"]), /Unknown option/);
-    assert.throws(() => parseArgs(["--tree"]), /Unknown option: --tree/);
-    assert.throws(() => parseArgs(["--formula", "wget"]), /Unknown option: --formula/);
-    assert.throws(() => parseArgs(["--cask", "firefox"]), /Unknown option: --cask/);
-    assert.throws(() => parseArgs(["-h"]), /Unknown option: -h/);
-    assert.throws(() => parseArgs(["-v"]), /Unknown option: -v/);
+    for (const args of [
+      ["--hide-casks"],
+      ["--nope"],
+      ["--tree"],
+      ["--jsonf"],
+      ["--formula", "wget"],
+      ["--cask", "firefox"],
+      ["-h"],
+      ["-v"],
+    ]) {
+      assert.throws(() => parseArgs(args), {
+        message: `The option '${args[0]}' is not recognized.`,
+      });
+    }
   });
 
   it("treats everything after -- as a name", () => {

@@ -4,7 +4,7 @@ Summary:
 2 Shared Dependencies
 
 Installed Formulae:
-a-tool (3 Dependencies, 1 Exclusive)
+a-tool (3 Dependencies)
   common-lib, ncurses, readline
 b-tool (2 Dependencies)
   common-lib, ncurses
