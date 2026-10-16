@@ -158,15 +158,23 @@ describe("text detail", () => {
     for (const fixture of FIXTURES) {
       const analysis = analysisOf(fixture);
       for (const facts of [...analysis.packages, ...analysis.casks]) {
-        const lines = renderDetail(analysis, facts, {
-          width: MIN_TERMINAL_WIDTH,
-          isTTY: true,
-        });
-        for (const line of lines.slice(0, lines.indexOf(""))) {
-          assert.ok(
-            [...stripSgr(line)].length <= MIN_TERMINAL_WIDTH,
-            `${facts.label}: "${line}" overflows ${MIN_TERMINAL_WIDTH} columns`,
-          );
+        for (const width of [1, 6, 7, 20, 32, 35, 39, MIN_TERMINAL_WIDTH, 80]) {
+          const lines = renderDetail(analysis, facts, { width, isTTY: true });
+          const heading = lines.slice(0, lines.indexOf("")).map(stripSgr);
+          for (const line of heading) {
+            assert.ok(
+              [...line].length <= width,
+              `${facts.label}: "${line}" overflows ${width} columns`,
+            );
+          }
+          const content = heading.join("").replace(/[│\s]/g, "");
+          assert.ok(content.includes(facts.label.replace(/\s/g, "")));
+          const versions =
+            facts.type === "formula" ? facts.node.installedVersions : [facts.node.version];
+          for (const version of versions) {
+            if (version) assert.ok(content.includes(version.replace(/\s/g, "")));
+          }
+          if (width < 7) assert.doesNotMatch(heading.join(""), /[┌│└]/);
         }
       }
     }

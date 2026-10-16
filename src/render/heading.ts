@@ -1,6 +1,6 @@
 import type { ExplainedPackage } from "../graph/types.js";
 import { labelled } from "./labels.js";
-import { type TextOptions, budgetOf, wrapToWidth } from "./layout.js";
+import { type TextOptions, wrapToWidth } from "./layout.js";
 
 export function renderHeading(
   facts: ExplainedPackage,
@@ -13,9 +13,12 @@ export function renderHeading(
 
   const homepage = (facts.node.homepage ?? "").replace(/^https?:\/\//i, "").replace(/\/+$/, "");
   const width = Math.min(
-    budgetOf(options),
+    Math.max(1, options.width),
     Math.max(40, label.length + version.length + 11, homepage.length + 6),
   );
+  if (width < 7) {
+    return [label, version, homepage].filter(Boolean).flatMap((text) => wrapToWidth(text, width));
+  }
   const inner = width - 6;
   const row = (text: string, styled: string): string =>
     `│  ${styled}${" ".repeat(inner - text.length)}  │`;
