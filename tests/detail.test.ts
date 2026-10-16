@@ -265,7 +265,7 @@ describe("text detail", () => {
     assert.doesNotMatch(rendered, /Indirectly requires pcre2/);
   });
 
-  it("frames the colored package name and version with padding", () => {
+  it("frames the colored package name, version and homepage with padding", () => {
     for (const fixture of FIXTURES) {
       const analysis = analysisOf(fixture);
       for (const facts of [...analysis.packages, ...analysis.casks]) {
@@ -280,7 +280,10 @@ describe("text detail", () => {
         assert.ok(!heading.some((line) => /[╭╮╰╯]/.test(line)));
         assert.equal(new Set(heading.map((line) => line.length)).size, 1);
         if (facts.node.description) assert.ok(!lines.join("\n").includes(facts.node.description));
-        if (facts.node.homepage) assert.ok(!lines.join("\n").includes(facts.node.homepage));
+        if (facts.node.homepage) {
+          assert.ok(heading[3]?.includes(new URL(facts.node.homepage).host));
+          assert.doesNotMatch(heading[3] ?? "", /https?:\/\/|\/ +│$/);
+        }
       }
     }
   });
@@ -313,7 +316,7 @@ describe("text detail", () => {
     assert.ok(!rendered.includes("as a dependency"));
   });
 
-  it("wraps long names and versions without losing metadata", () => {
+  it("wraps long names, versions and homepages without losing metadata", () => {
     const cases = [
       {
         name: "python@3.12",
@@ -332,7 +335,7 @@ describe("text detail", () => {
               name,
               full_name: name,
               desc: "Interpreted, interactive, object-oriented programming language",
-              homepage: "https://www.python.org/",
+              homepage: "https://www.python.org/about/gettingstarted/",
               linked_keg: versions[versions.length - 1],
               installed: versions.map((version) => ({
                 version,
@@ -361,7 +364,8 @@ describe("text detail", () => {
       assert.ok(
         !rendered.includes("Interpreted, interactive, object-oriented programming language"),
       );
-      assert.ok(!rendered.includes("https://www.python.org/"));
+      assert.ok(rendered.replace(/[│\s]/g, "").includes("www.python.org/about/gettingstarted"));
+      assert.doesNotMatch(rendered, /https?:\/\/|gettingstarted\//);
     }
   });
 });

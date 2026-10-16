@@ -11,18 +11,30 @@ export function renderHeading(
   const version = headingVersion(facts);
   if (!options.isTTY) return [label, version].filter(Boolean);
 
-  const width = Math.min(budgetOf(options), Math.max(40, label.length + version.length + 10));
+  const homepage = (facts.node.homepage ?? "").replace(/^https?:\/\//i, "").replace(/\/+$/, "");
+  const width = Math.min(
+    budgetOf(options),
+    Math.max(40, label.length + version.length + 11, homepage.length + 6),
+  );
   const inner = width - 6;
   const row = (text: string, styled: string): string =>
     `│  ${styled}${" ".repeat(inner - text.length)}  │`;
   const name = wrapToWidth(label, inner).map((line) => row(line, `\x1b[1;36m${line}\x1b[0m`));
   const versions = wrapToWidth(version, inner).map((line) => row(line, `\x1b[2m${line}\x1b[0m`));
   const rows =
-    version.length > 0 && label.length + version.length + 2 <= inner
-      ? [row(`${label}  ${version}`, `\x1b[1;36m${label}\x1b[0m  \x1b[2m${version}\x1b[0m`)]
+    version.length > 0 && label.length + version.length + 3 <= inner
+      ? [row(`${label} - ${version}`, `\x1b[1;36m${label}\x1b[0m - \x1b[2m${version}\x1b[0m`)]
       : [...name, ...(version.length > 0 ? versions : [])];
   const blank = `│${" ".repeat(width - 2)}│`;
-  return [`┌${"─".repeat(width - 2)}┐`, blank, ...rows, blank, `└${"─".repeat(width - 2)}┘`];
+  const homepageRows = homepage ? wrapToWidth(homepage, inner).map((line) => row(line, line)) : [];
+  return [
+    `┌${"─".repeat(width - 2)}┐`,
+    blank,
+    ...rows,
+    ...homepageRows,
+    blank,
+    `└${"─".repeat(width - 2)}┘`,
+  ];
 }
 
 function headingVersion(facts: ExplainedPackage): string {
