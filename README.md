@@ -10,7 +10,7 @@ A read-only CLI that explains why each formula is installed.
 
 ### Requirements
 
-- `macOS` with `Homebrew`.
+- `macOS` with `Homebrew` — [requirements](https://docs.brew.sh/Installation#macos-requirements).
 - `Node.js 22.14+ (22.x)` or `24.10+`, with `npm`.
 - `Git` for building from source.
 
