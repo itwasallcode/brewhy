@@ -177,12 +177,13 @@ function summarizeRoots(analysis: RootlessAnalysis, caskSources: string[]): Root
   const grouped = new Map(
     rootIDs.map((ID) => [ID, { dependencies: [] as string[], exclusive: [] as string[] }]),
   );
+  const independentRoots = new Set(rootIDs);
   for (const [nodeID, sources] of analysis.reachability.sourcesByNode) {
     for (const sourceID of sources) {
       const entry = grouped.get(sourceID);
       if (!entry) continue;
       entry.dependencies.push(nodeID);
-      if (sources.length === 1) entry.exclusive.push(nodeID);
+      if (sources.length === 1 && !independentRoots.has(nodeID)) entry.exclusive.push(nodeID);
     }
   }
 

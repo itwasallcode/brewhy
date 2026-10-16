@@ -28,6 +28,19 @@ describe("analyze", () => {
     );
   });
 
+  it("does not count another installation root as an exclusive dependency", () => {
+    for (const fixture of ["installed-shared", "installed-cask-cyclic"]) {
+      const analysis = analysisOf(fixture);
+      const roots = new Set(analysis.roots.map((root) => root.ID));
+      for (const root of analysis.roots) {
+        assert.ok(
+          root.exclusive.every((ID) => !roots.has(ID)),
+          `${fixture}: ${root.label}`,
+        );
+      }
+    }
+  });
+
   it("reports every distinct reason source for a shared dependency", () => {
     const analysis = analysisOf("installed-shared");
     const common = analysis.byID.get(formulaID("common-lib"));

@@ -1,9 +1,8 @@
 podman-desktop
 1.0.0
-Podman Desktop
 
-Installed                    as a cask
-Brings in                    2 formulae, 2 only through podman-desktop
-Requires directly            podman
-Everything it brings in      gvproxy, podman
-Only through podman-desktop  gvproxy, podman
+-> Installed as a cask.
+-> Brings in 2 dependencies: 1 direct and 1 indirect.
+-> Directly requires podman.
+-> Indirectly requires gvproxy.
+-> All 2 dependencies are used only through podman-desktop.

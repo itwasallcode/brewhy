@@ -1,6 +1,11 @@
-export function helpText(isTTY: boolean): string {
+export function programIntro(isTTY: boolean): string {
   const name = isTTY ? "\x1b[1mbrewhy\x1b[0m" : "brewhy";
-  return `${name} — A read-only CLI that explains why each formula is installed.
+  return `${name} — A read-only CLI that explains why each formula is installed.`;
+}
+
+export function helpText(isTTY: boolean): string {
+  return `
+${programIntro(isTTY)}
 
 Usage:
   brewhy                            List requested formulae
@@ -13,5 +18,6 @@ Usage:
 
   brewhy --help                     Show help
   brewhy --version                  Show version
+
 `;
 }

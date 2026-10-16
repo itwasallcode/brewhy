@@ -59,6 +59,9 @@ const result = await run(process.argv.slice(2), {
   preferences: new FilePreferences(),
 });
 
-if (result.stderr) write(process.stderr, result.stderr);
+if (result.stderr) {
+  const text = process.stderr.isTTY ? `\n${result.stderr}\n` : result.stderr;
+  write(process.stderr, text);
+}
 if (result.stdout) write(process.stdout, result.stdout);
 process.exitCode = result.exitCode;

@@ -53,8 +53,8 @@ describe("malformed Homebrew metadata", () => {
     assert.equal(result.exitCode, 0);
     assert.match(result.stdout, /^tool$/m);
     assert.match(result.stdout, /^app$/m);
-    assert.equal(result.stderr.split("\n").filter((line) => line.startsWith("warning:")).length, 6);
-    assert.doesNotMatch(result.stderr, /Unexpected failure/);
+    assert.equal(result.stderr.split("\n").filter((line) => line.startsWith("Warning:")).length, 6);
+    assert.doesNotMatch(result.stderr, /An unexpected error occurred/);
   });
 
   it("ignores malformed kegs and preserves the linked version's dependencies", () => {

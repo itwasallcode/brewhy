@@ -5,7 +5,7 @@ Summary:
 1 Shared Dependency
 
 Installed Casks:
-loop-a (2 Packages, 1 Exclusive)
+loop-a (2 Packages)
   helper-lib, loop-b (cask)
-loop-b (2 Packages, 1 Exclusive)
+loop-b (2 Packages)
   helper-lib, loop-a (cask)

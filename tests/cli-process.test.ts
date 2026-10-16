@@ -148,11 +148,11 @@ describe("cli entry point", () => {
     const brew = stubBrew(context, "installed-incomplete");
     const { stdout, stderr, code } = await runCli([], brew);
     assert.equal(code, 0);
-    assert.match(stderr, /^warning: /m);
-    assert.ok(!stdout.includes("warning:"));
+    assert.match(stderr, /^Warning: /m);
+    assert.ok(!stdout.includes("Warning:"));
   });
 
-  it("keeps redirected details free of frames and ANSI without changing external text", async (context) => {
+  it("keeps redirected details free of frames, ANSI, and optional package metadata", async (context) => {
     const brew = stubBrew(context, "installed-basic");
     const fixture = loadFixture("installed-basic");
     const formula = fixture.info.formulae?.find((entry) => entry.name === "node");
@@ -166,8 +166,8 @@ describe("cli entry point", () => {
     assert.equal(code, 0);
     assert.equal(stderr, "");
     assert.match(stdout, /^node$/m);
-    assert.ok(stdout.split("\n").includes(description));
-    assert.ok(stdout.split("\n").includes(homepage));
+    assert.ok(!stdout.includes(description));
+    assert.ok(!stdout.includes(homepage));
     assert.doesNotMatch(stdout, /\x1b|[╔═╗║╚╝✓]/);
   });
 

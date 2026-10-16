@@ -1,9 +1,8 @@
 gamma
 1.0.0
-gamma description
 
-Installed  as a dependency
-Reason     Unexplained
+-> Installed as a dependency.
+-> No installed dependencies are recorded.
 
-The available Homebrew data does not explain why this formula is installed. This
-does not mean the formula is safe to remove.
+-> The available Homebrew data does not explain why this formula is installed.
+-> This does not mean the formula is safe to remove.

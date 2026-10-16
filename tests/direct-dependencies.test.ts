@@ -37,7 +37,7 @@ describe("direct dependency explanations", () => {
 
   it("shows the actual chain in text without changing the overview counts", async () => {
     const result = await runFixture(fixtureName, ["pcre2"]);
-    assert.match(result.stdout, /^Directly required by\s+ripgrep$/m);
+    assert.match(result.stdout, /^-> Directly required by ripgrep\.$/m);
     assert.match(result.stdout, /opencode → ripgrep → pcre2/);
     const analysis = analysisOf(fixtureName);
     assert.deepEqual(analysis.summary, {
